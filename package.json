@@ -1,0 +1,24 @@
+{
+  "name": "bwaminator",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Twitter-narrative pumpfun deploy bot. Hasta la vista, bwam.",
+  "type": "module",
+  "scripts": {
+    "deploy": "tsx src/deployer/deploy.ts",
+    "build-alt": "tsx src/deployer/build_alt.ts"
+  },
+  "dependencies": {
+    "@solana/spl-token": "^0.4.9",
+    "@solana/web3.js": "^1.95.4",
+    "bn.js": "^5.2.1",
+    "bs58": "^6.0.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "tsx": "^4.19.2",
+    "typescript": "^5.6.3",
+    "@types/node": "^22.9.0",
+    "@types/bn.js": "^5.1.6"
+  }
+}

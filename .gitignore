@@ -1,0 +1,41 @@
+# Secrets / config
+.env
+.env.local
+.env.*.local
+
+# Wallet keys & nonce auth
+keys/
+*.keypair.json
+deployer.json
+nonce_authority.json
+
+# Pre-grinded mint pool
+mint_pool/
+
+# twscrape
+*.db
+twscrape.db
+
+# Generated runtime data
+data/agent_holdings.json
+data/dry_run_report.csv
+
+# Node / Python / TS
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+dist/
+build/
+.tsbuildinfo
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# RunPod LoRAs (large binaries; users supply their own)
+runpod/loras/*.safetensors

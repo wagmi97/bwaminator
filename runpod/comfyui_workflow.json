@@ -1,0 +1,103 @@
+{
+  "_comment": "ComfyUI workflow for the uncensored fallback. Stack: Flux Schnell base + CHROMA LoRA (Flux-compatible uncensored fork) + Pony Diffusion XL as a secondary checkpoint for stylized/cartoon. The endpoint exposes ONE input slot: {prompt}. Wrap this with a small RunPod handler that POPULATES the prompt at node 6 and returns the bytes from node 12.",
+  "_runpod_handler_template": "Set the SaveImage node to 'image_b64' output mode (or read /tmp/comfy_out/*.png and base64-encode in your handler.py).",
+
+  "1": {
+    "_meta": { "title": "Load Flux Schnell" },
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "flux1-schnell.safetensors",
+      "weight_dtype": "fp8_e4m3fn"
+    }
+  },
+  "2": {
+    "_meta": { "title": "Load CLIP" },
+    "class_type": "DualCLIPLoader",
+    "inputs": {
+      "clip_name1": "t5xxl_fp8_e4m3fn.safetensors",
+      "clip_name2": "clip_l.safetensors",
+      "type": "flux"
+    }
+  },
+  "3": {
+    "_meta": { "title": "Load VAE" },
+    "class_type": "VAELoader",
+    "inputs": { "vae_name": "ae.safetensors" }
+  },
+  "4": {
+    "_meta": { "title": "CHROMA LoRA (Flux-compatible uncensored)" },
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": ["1", 0],
+      "lora_name": "chroma_v2.safetensors",
+      "strength_model": 0.85
+    }
+  },
+  "5": {
+    "_meta": { "title": "Optional secondary LoRA (style)" },
+    "class_type": "LoraLoaderModelOnly",
+    "inputs": {
+      "model": ["4", 0],
+      "lora_name": "flux-uncensored-v2.safetensors",
+      "strength_model": 0.6
+    }
+  },
+  "6": {
+    "_meta": { "title": "Prompt (RunPod handler injects here)" },
+    "class_type": "CLIPTextEncode",
+    "inputs": {
+      "clip": ["2", 0],
+      "text": "%%PROMPT%%"
+    }
+  },
+  "7": {
+    "_meta": { "title": "Negative (Schnell ignores but kept for SDXL swap)" },
+    "class_type": "CLIPTextEncode",
+    "inputs": { "clip": ["2", 0], "text": "low quality, blurry, watermark" }
+  },
+  "8": {
+    "_meta": { "title": "Empty Latent 1024x1024" },
+    "class_type": "EmptySD3LatentImage",
+    "inputs": { "width": 1024, "height": 1024, "batch_size": 1 }
+  },
+  "9": {
+    "_meta": { "title": "KSampler (4 steps Schnell distilled)" },
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["5", 0],
+      "positive": ["6", 0],
+      "negative": ["7", 0],
+      "latent_image": ["8", 0],
+      "seed": 0,
+      "steps": 4,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "10": {
+    "_meta": { "title": "VAE Decode" },
+    "class_type": "VAEDecode",
+    "inputs": { "samples": ["9", 0], "vae": ["3", 0] }
+  },
+  "11": {
+    "_meta": { "title": "Resize 768 (token logo size)" },
+    "class_type": "ImageScale",
+    "inputs": {
+      "image": ["10", 0],
+      "upscale_method": "lanczos",
+      "width": 768,
+      "height": 768,
+      "crop": "center"
+    }
+  },
+  "12": {
+    "_meta": { "title": "Save (handler reads from here)" },
+    "class_type": "SaveImage",
+    "inputs": {
+      "filename_prefix": "memecoin",
+      "images": ["11", 0]
+    }
+  }
+}

@@ -1,0 +1,14 @@
+[project]
+name = "bwaminator"
+version = "0.0.1"
+description = "Twitter-narrative pumpfun deploy bot. Hunts bwam's blocks."
+requires-python = ">=3.11"
+dependencies = [
+    "httpx>=0.27",
+    "anthropic>=0.40",
+    "pillow>=10",
+    "boto3>=1.35",
+    "python-dotenv>=1.0",
+    "tweepy>=4.14",         # only if using bearer-token mode
+    "pydantic>=2.7",
+]
