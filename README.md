@@ -8,7 +8,7 @@
 ═══════════════════════════ hasta la vista, bwam ═══════════════════════════════════
 ```
 
-Twitter-narrative pump.fun deploy bot. Watches a curated list of high-signal X accounts, names a coin from each tweet, and ships it on-chain in single-digit seconds.
+Twitter-narrative pump.fun deploy bot. Watches a curated list of high-signal X accounts, names a coin from each tweet, and ships it on-chain in single-digit seconds. 
 
 ## Stack
 
